@@ -1,37 +1,14 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
-import { dirname, join, resolve } from 'path';
-import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const skillRoot = join(__dirname, '..');
 
 async function loadBeautifulMermaid() {
   try {
     return await import('beautiful-mermaid');
-  } catch {}
-
-  console.error('[beautiful-mermaid] Dependency not found. Installing automatically...');
-  try {
-    execSync('npm install --no-fund --no-audit', {
-      cwd: skillRoot,
-      stdio: ['pipe', 'pipe', 'inherit'],
-      timeout: 120000,
-    });
-    console.error('[beautiful-mermaid] Installed successfully.\n');
-  } catch (e) {
-    console.error(`[beautiful-mermaid] Auto-install failed: ${e.message}`);
-    console.error(`Manual fix: cd ${skillRoot} && npm install`);
-    process.exit(1);
-  }
-
-  try {
-    const pkgPath = join(skillRoot, 'node_modules', 'beautiful-mermaid', 'dist', 'index.js');
-    return await import(pkgPath);
-  } catch (e) {
-    console.error(`[beautiful-mermaid] Failed to load after install: ${e.message}`);
+  } catch (error) {
+    console.error('[beautiful-mermaid] Dependency is not installed.');
+    console.error('Run `npm ci --ignore-scripts` in the Pretty-mermaid-skills directory, then try again.');
+    console.error(`Cause: ${error.message}`);
     process.exit(1);
   }
 }
@@ -76,26 +53,7 @@ function parseArgs() {
       case '--padding-y': opts.paddingY = parseInt(val); i++; break;
       case '--box-border-padding': opts.boxBorderPadding = parseInt(val); i++; break;
       case '--help': case '-h':
-        console.log(`Usage: node render.mjs --input <file> [options]
-
-Options:
-  -i, --input <file>       Input Mermaid file (.mmd) [required]
-  -o, --output <file>      Output file (default: stdout)
-  -f, --format <fmt>       Output format: svg | ascii (default: svg)
-  -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
-      --bg <hex>           Background color
-      --fg <hex>           Foreground color
-      --line <hex>         Edge/connector color
-      --accent <hex>       Arrow heads and highlights color
-      --muted <hex>        Secondary text color
-      --surface <hex>      Node fill tint color
-      --border <hex>       Node stroke color
-      --font <name>        Font family (default: Inter)
-      --transparent        Transparent background (SVG only)
-      --use-ascii          Pure ASCII instead of Unicode (ASCII only)
-      --padding-x <n>      Horizontal spacing (ASCII only, default: 5)
-      --padding-y <n>      Vertical spacing (ASCII only, default: 5)
-      --box-border-padding <n>  Padding inside node boxes (ASCII only, default: 1)`);
+        console.log(`Usage: node render.mjs --input <file> [options]\n\nOptions:\n  -i, --input <file>       Input Mermaid file (.mmd) [required]\n  -o, --output <file>      Output file (default: stdout)\n  -f, --format <fmt>       Output format: svg | ascii (default: svg)\n  -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)\n      --bg <hex>           Background color\n      --fg <hex>           Foreground color\n      --line <hex>         Edge/connector color\n      --accent <hex>       Arrow heads and highlights color\n      --muted <hex>        Secondary text color\n      --surface <hex>      Node fill tint color\n      --border <hex>       Node stroke color\n      --font <name>        Font family (default: Inter)\n      --transparent        Transparent background (SVG only)\n      --use-ascii          Pure ASCII instead of Unicode (ASCII only)\n      --padding-x <n>      Horizontal spacing (ASCII only, default: 5)\n      --padding-y <n>      Vertical spacing (ASCII only, default: 5)\n      --box-border-padding <n>  Padding inside node boxes (ASCII only, default: 1)`);
         process.exit(0);
     }
   }
