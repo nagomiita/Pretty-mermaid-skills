@@ -9,7 +9,8 @@
     "list-mermaid-themes": "./scripts/themes.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.17.0 || >=22.9.0",
+    "npm": ">=11.10.0"
   },
   "dependencies": {
     "beautiful-mermaid": "0.1.3"
