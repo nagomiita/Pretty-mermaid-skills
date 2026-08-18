@@ -9,7 +9,7 @@ Render Mermaid diagrams as beautiful SVGs or ASCII art
 Ultra-fast, fully themeable, zero DOM dependencies. Built for the AI era.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%5E20.17%20%7C%7C%20%3E%3D22.9-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/nagomiita/Pretty-mermaid-skills?style=social)](https://github.com/nagomiita/Pretty-mermaid-skills)
 
 **English** ｜ [中文](README_CN.md)
@@ -19,7 +19,7 @@ Ultra-fast, fully themeable, zero DOM dependencies. Built for the AI era.
 ## Introduction
 A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output formats to make your documentation more vivid.
 
-This fork hardens dependency handling: runtime scripts never install packages automatically, runtime dependencies are pinned in `package-lock.json`, and installation is an explicit step.
+This fork hardens dependency handling: runtime scripts never install packages automatically, runtime dependencies are pinned in `package-lock.json`, npm lifecycle scripts are disabled, and newly published package versions are excluded from dependency resolution for seven days.
 
 ## ✨ Features
 
@@ -28,7 +28,7 @@ This fork hardens dependency handling: runtime scripts never install packages au
 - 📈 **Full Diagram Support**: Flowchart, Sequence, State, Class, ER and more
 - ⚡ **High Performance**: Batch parallel rendering
 - 📚 **Ready to Use**: Complete templates and detailed documentation
-- 🔒 **Hardened Dependency Handling**: No runtime `npm install`; reproducible locked dependencies
+- 🔒 **Hardened Dependency Handling**: No runtime `npm install`; reproducible locked dependencies; lifecycle scripts disabled; 7-day release-age gate
 
 ### Supported Themes
 | Light Themes | Dark Themes | Other |
@@ -66,14 +66,29 @@ cd Pretty-mermaid
 npm ci --ignore-scripts
 ```
 
-`npm ci` installs exactly the versions recorded in `package-lock.json`. `--ignore-scripts` prevents npm lifecycle scripts from running during dependency installation.
+`npm ci` installs exactly the versions recorded in `package-lock.json`. `--ignore-scripts` and the repository `.npmrc` prevent npm lifecycle scripts from running during dependency installation.
 
 ### Verify Installation
 ```bash
 node scripts/themes.mjs
 ```
 
-> **Security note**: The rendering scripts do not invoke npm and do not install dependencies automatically. If dependencies are missing, they exit with instructions to run the explicit install command above.
+> **Security note**: The rendering scripts do not invoke npm and do not install dependencies automatically. The repository requires npm 11.10.0+ and uses `min-release-age=7`, so dependency resolution excludes versions published less than seven days ago. `engine-strict=true` prevents unsupported Node/npm versions from silently bypassing this policy.
+
+## 🔐 Dependency Security Policy
+
+The repository-local `.npmrc` applies these controls:
+
+```ini
+ignore-scripts=true
+audit=true
+fund=false
+save-exact=true
+engine-strict=true
+min-release-age=7
+```
+
+`min-release-age` is primarily a protection for dependency resolution and lockfile updates. Normal reproducible installs should continue to use `npm ci` with the committed lockfile. Do not casually override the seven-day gate when updating dependencies; review urgent security exceptions explicitly.
 
 ## 📖 Quick Start
 
@@ -111,8 +126,8 @@ Check the 5 template files in `assets/example_diagrams/`:
 See [SKILL.md](SKILL.md) for detailed usage guide.
 
 ## ⚙️ Requirements
-- Node.js 18+
-- npm with `npm ci` support
+- Node.js `^20.17.0 || >=22.9.0`
+- npm 11.10.0+
 
 ## 📄 License
 MIT License

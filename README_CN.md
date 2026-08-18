@@ -9,7 +9,7 @@
 极速、全主题支持、零 DOM 依赖。为 AI 而生。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%5E20.17%20%7C%7C%20%3E%3D22.9-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/nagomiita/Pretty-mermaid-skills?style=social)](https://github.com/nagomiita/Pretty-mermaid-skills)
 
 **中文** | [English](README.md)
@@ -19,7 +19,7 @@
 ## 简介
 为 AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出，让您的文档更加生动。
 
-此 fork 对依赖处理进行了安全加固：运行时脚本不会自动安装任何 npm 包，运行依赖通过 `package-lock.json` 固定，并要求显式安装。
+此 fork 对依赖处理进行了安全加固：运行时脚本不会自动安装任何 npm 包，运行依赖通过 `package-lock.json` 固定，npm lifecycle scripts 默认禁用，并且依赖解析时会排除发布不足 7 天的新版本。
 
 ## ✨ 功能特性
 
@@ -28,7 +28,7 @@
 - 📈 **全图表支持**：支持 Flowchart, Sequence, State, Class, ER 等 5 种常用图表
 - ⚡ **高效渲染**：支持批量并行渲染，速度飞快
 - 📚 **开箱即用**：提供完整的模板和详细文档
-- 🔒 **依赖安全加固**：运行时不执行 `npm install`，依赖版本由 lockfile 固定
+- 🔒 **依赖安全加固**：运行时不执行 `npm install`，依赖由 lockfile 固定，禁用 lifecycle scripts，并设置 7 天 release-age 门槛
 
 ### 支持主题列表
 | Light Themes | Dark Themes | Other |
@@ -66,14 +66,29 @@ cd Pretty-mermaid
 npm ci --ignore-scripts
 ```
 
-`npm ci` 会严格按照 `package-lock.json` 中记录的版本安装依赖；`--ignore-scripts` 会阻止依赖安装期间执行 npm lifecycle scripts。
+`npm ci` 会严格按照 `package-lock.json` 中记录的版本安装依赖；`--ignore-scripts` 和仓库内 `.npmrc` 会阻止依赖安装期间执行 npm lifecycle scripts。
 
 ### 验证安装
 ```bash
 node scripts/themes.mjs
 ```
 
-> **安全提示**：渲染脚本不会调用 npm，也不会自动安装依赖。如果依赖缺失，脚本会直接退出并提示执行上述显式安装命令。
+> **安全提示**：渲染脚本不会调用 npm，也不会自动安装依赖。仓库要求 npm 11.10.0+，并设置 `min-release-age=7`，因此依赖解析时不会选择发布不足 7 天的新版本。`engine-strict=true` 会阻止不受支持的 Node/npm 版本静默绕过该策略。
+
+## 🔐 依赖安全策略
+
+仓库内 `.npmrc` 使用以下设置：
+
+```ini
+ignore-scripts=true
+audit=true
+fund=false
+save-exact=true
+engine-strict=true
+min-release-age=7
+```
+
+`min-release-age` 主要用于依赖解析和 lockfile 更新时的保护。日常可重复安装应继续使用已提交的 lockfile 配合 `npm ci`。更新依赖时不要随意绕过 7 天门槛；若安全修复必须紧急升级，应明确审查后再作为例外处理。
 
 ## 📖 快速开始
 
@@ -111,8 +126,8 @@ node scripts/batch.mjs \
 详细使用指南请参阅 [SKILL.md](SKILL.md)
 
 ## ⚙️ 系统要求
-- Node.js 18+
-- 支持 `npm ci` 的 npm
+- Node.js `^20.17.0 || >=22.9.0`
+- npm 11.10.0+
 
 ## 📄 许可证
 MIT License

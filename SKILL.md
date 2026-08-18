@@ -19,7 +19,7 @@ Render stunning, professionally-styled Mermaid diagrams with one command. Suppor
 
 ## Dependency Setup and Safety
 
-Requires Node.js 18+.
+Requires Node.js `^20.17.0 || >=22.9.0` and npm 11.10.0+.
 
 Dependencies are intentionally **not installed at runtime**. Before the first render, install the exact locked dependency set from the skill directory:
 
@@ -30,6 +30,9 @@ npm ci --ignore-scripts
 Security rules for this skill:
 - Never run `npm install` automatically from a rendering script.
 - Prefer `npm ci --ignore-scripts` so versions come from `package-lock.json` and npm lifecycle scripts are disabled.
+- Keep the repository `.npmrc` security controls enabled, including `engine-strict=true` and `min-release-age=7`.
+- Treat the 7-day minimum release age as a guard for dependency resolution and lockfile updates; do not bypass it casually.
+- If an urgent security fix is newer than seven days, review that exception explicitly before temporarily relaxing the gate.
 - If `beautiful-mermaid` is missing, stop and tell the user to run the explicit install command above.
 - Do not modify dependency versions or regenerate the lockfile as part of a normal diagram-rendering request.
 
