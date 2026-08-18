@@ -9,8 +9,8 @@
 极速、全主题支持、零 DOM 依赖。为 AI 而生。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
-[![GitHub stars](https://img.shields.io/github/stars/imxv/Pretty-mermaid-skills?style=social)](https://github.com/imxv/Pretty-mermaid-skills)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![GitHub stars](https://img.shields.io/github/stars/nagomiita/Pretty-mermaid-skills?style=social)](https://github.com/nagomiita/Pretty-mermaid-skills)
 
 **中文** | [English](README.md)
 
@@ -19,6 +19,8 @@
 ## 简介
 为 AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出，让您的文档更加生动。
 
+此 fork 对依赖处理进行了安全加固：运行时脚本不会自动安装任何 npm 包，运行依赖通过 `package-lock.json` 固定，并要求显式安装。
+
 ## ✨ 功能特性
 
 - 📊 **多格式支持**：支持 SVG 和 ASCII 渲染导出
@@ -26,6 +28,7 @@
 - 📈 **全图表支持**：支持 Flowchart, Sequence, State, Class, ER 等 5 种常用图表
 - ⚡ **高效渲染**：支持批量并行渲染，速度飞快
 - 📚 **开箱即用**：提供完整的模板和详细文档
+- 🔒 **依赖安全加固**：运行时不执行 `npm install`，依赖版本由 lockfile 固定
 
 ### 支持主题列表
 | Light Themes | Dark Themes | Other |
@@ -51,17 +54,26 @@
 
 ## 🚀 安装步骤
 
-### 一键安装
+### 一键安装 Skill
 ```bash
-npx skills add https://github.com/imxv/pretty-mermaid-skills --skill pretty-mermaid
+npx skills add https://github.com/nagomiita/Pretty-mermaid-skills --skill pretty-mermaid
 ```
+
+### 安装锁定的依赖
+在已安装的 Skill 目录中执行一次：
+```bash
+cd Pretty-mermaid
+npm ci --ignore-scripts
+```
+
+`npm ci` 会严格按照 `package-lock.json` 中记录的版本安装依赖；`--ignore-scripts` 会阻止依赖安装期间执行 npm lifecycle scripts。
 
 ### 验证安装
 ```bash
-cd Pretty-mermaid
 node scripts/themes.mjs
 ```
-> **提示**：首次运行时会自动安装依赖，只需确保您的环境中有 Node.js。
+
+> **安全提示**：渲染脚本不会调用 npm，也不会自动安装依赖。如果依赖缺失，脚本会直接退出并提示执行上述显式安装命令。
 
 ## 📖 快速开始
 
@@ -99,14 +111,15 @@ node scripts/batch.mjs \
 详细使用指南请参阅 [SKILL.md](SKILL.md)
 
 ## ⚙️ 系统要求
-- Node.js 14+
+- Node.js 18+
+- 支持 `npm ci` 的 npm
 
 ## 📄 许可证
 MIT License
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=imxv/Pretty-mermaid-skills&type=timeline&legend=top-left)](https://www.star-history.com/#imxv/Pretty-mermaid-skills&type=timeline&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=nagomiita/Pretty-mermaid-skills&type=timeline&legend=top-left)](https://www.star-history.com/#nagomiita/Pretty-mermaid-skills&type=timeline&legend=top-left)
 
 ## 🙏 致谢
 基于 [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) 项目
