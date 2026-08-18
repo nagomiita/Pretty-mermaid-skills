@@ -17,6 +17,22 @@ description: |
 
 Render stunning, professionally-styled Mermaid diagrams with one command. Supports SVG for web/docs and ASCII for terminals.
 
+## Dependency Setup and Safety
+
+Requires Node.js 18+.
+
+Dependencies are intentionally **not installed at runtime**. Before the first render, install the exact locked dependency set from the skill directory:
+
+```bash
+npm ci --ignore-scripts
+```
+
+Security rules for this skill:
+- Never run `npm install` automatically from a rendering script.
+- Prefer `npm ci --ignore-scripts` so versions come from `package-lock.json` and npm lifecycle scripts are disabled.
+- If `beautiful-mermaid` is missing, stop and tell the user to run the explicit install command above.
+- Do not modify dependency versions or regenerate the lockfile as part of a normal diagram-rendering request.
+
 ## Quick Start
 
 ### Render a Single Diagram
@@ -438,12 +454,14 @@ node scripts/render.mjs \
 
 ### beautiful-mermaid Not Installed
 ```
-Error: Cannot find module 'beautiful-mermaid'
+[beautiful-mermaid] Dependency is not installed.
 ```
-**Note:** This should auto-install on first run. If it fails:
+**Solution:** Install the locked dependencies explicitly from the skill directory:
 ```bash
-cd /path/to/pretty-mermaid-skill && npm install
+npm ci --ignore-scripts
 ```
+
+Do not add automatic dependency installation to the rendering scripts.
 
 ### Invalid Mermaid Syntax
 ```
